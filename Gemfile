@@ -66,3 +66,5 @@ group :test do
   gem "selenium-webdriver"
 end
 
+gem 'factory_bot_rails'
+
