@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe SaucesController, type: :controller do
   let(:valid_params) { { sauce: attributes_for(:sauce) } }
   let(:invalid_params) { {sauce: attributes_for(:sauce_with_empty_fields)} }
+  let(:update_attributes) { { nom: 'New Sauce', description: 'Updated description' } }
 
   def expect_status(expected_status)
     expect(response).to have_http_status(expected_status)
@@ -94,11 +95,11 @@ RSpec.describe SaucesController, type: :controller do
   end
 
   describe "GET #show" do
-  let!(:sauce) { create(:sauce)}
+    let!(:sauce) { create(:sauce)}
     context "when the sauce exists" do
       it "returns the sauce in JSON format with a 200 status" do
         get :show, params: { id: sauce.id }
-        expect(response).to have_http_status(:ok)
+        expect_status(:ok)
         json_response = JSON.parse(response.body)
         expect_sauce_object_attributes(json_response)
       end
@@ -107,7 +108,23 @@ RSpec.describe SaucesController, type: :controller do
     context "when the sauce does not exist" do
       it "returns a 404 error" do
         get :show, params: { id: 9999 }
-        expect(response).to have_http_status(:not_found)
+        expect_status(:not_found)
+      end
+    end
+  end
+
+  describe 'PATCH #update' do
+    let!(:sauce) { create(:sauce)}
+    context 'when sauce exists' do
+      it 'updates the sauce successfully with valid params' do
+        patch :update, params: { id: sauce.id, sauce: update_attributes }
+        expect_status(:ok) 
+        expect(JSON.parse(response.body)['sauce']['nom']).to eq(update_attributes[:nom])
+      end
+
+      it 'returns an error when the sauce fails to update with invalid params' do
+        patch :update, params: { id: sauce.id, sauce: invalid_params[:sauce] }
+        expect_status(:unprocessable_entity)
       end
     end
   end

@@ -1,6 +1,6 @@
 class SaucesController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [:create, :destroy, :show]
-  before_action :set_sauce, only: %i[destroy show]
+  skip_before_action :verify_authenticity_token, only: [:create, :destroy, :show, :update]
+  before_action :set_sauce, only: %i[destroy show update]
 
   def index
     @sauces = Sauce.all
@@ -29,6 +29,14 @@ class SaucesController < ApplicationController
       render json: { message: "Sauce successfully deleted" }, status: :ok
     else
       render json: { error: "Failed to delete sauce" }, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    if @sauce.update(sauce_params)
+      render json: { sauce: @sauce }, status: :ok
+    else
+      render json: @sauce.errors, status: :unprocessable_entity
     end
   end
 
