@@ -8,9 +8,14 @@ RSpec.describe SaucesController, type: :controller do
     expect(response).to have_http_status(expected_status)
   end
 
-  def expect_sauce_attributes(json_response)
+  def expect_sauce_list_attributes(json_response)
     expected_keys = ["id", "nom", "description", "ingredients", "caracteristique", "quantite", "prix"]
     expect(json_response.first.keys).to include(*expected_keys)
+  end
+
+  def expect_sauce_object_attributes(json_response)
+    expected_keys = ["id", "nom", "description", "ingredients", "caracteristique", "quantite", "prix"]
+    expect(json_response.keys).to include(*expected_keys)
   end
 
   describe 'POST #create' do
@@ -49,7 +54,7 @@ RSpec.describe SaucesController, type: :controller do
     context "when the sauce doesn't exist" do
       it "returns an error message with unprocessable entity status" do
         expect { delete :destroy, params: { id: 999999 } }.not_to change(Sauce, :count)
-        expect_status(:unprocessable_entity)
+        expect_status(:not_found)
       end
     end
   end
@@ -74,7 +79,7 @@ RSpec.describe SaucesController, type: :controller do
       it "returns the correct attributes" do
         get :index
         json_response = JSON.parse(response.body)
-        expect_sauce_attributes(json_response)
+        expect_sauce_list_attributes(json_response)
       end
     end
 
@@ -84,6 +89,25 @@ RSpec.describe SaucesController, type: :controller do
         json_response = JSON.parse(response.body)
         expect(json_response["sauces"]).to eq([])
         expect_status(:ok)
+      end
+    end
+  end
+
+  describe "GET #show" do
+  let!(:sauce) { create(:sauce)}
+    context "when the sauce exists" do
+      it "returns the sauce in JSON format with a 200 status" do
+        get :show, params: { id: sauce.id }
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+        expect_sauce_object_attributes(json_response)
+      end
+    end
+
+    context "when the sauce does not exist" do
+      it "returns a 404 error" do
+        get :show, params: { id: 9999 }
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
