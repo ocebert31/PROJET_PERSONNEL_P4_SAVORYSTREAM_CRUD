@@ -67,4 +67,5 @@ group :test do
 end
 
 gem 'factory_bot_rails'
+gem 'rack-cors'
 
