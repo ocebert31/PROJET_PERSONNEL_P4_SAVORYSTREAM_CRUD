@@ -14,14 +14,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_30_091941) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "sauces", force: :cascade do |t|
-    t.string "nom", null: false
-    t.text "description"
-    t.text "ingredients"
-    t.string "caracteristique"
-    t.integer "quantite", null: false
-    t.decimal "prix", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "sauces", id: :serial, force: :cascade do |t|
+    t.string "nom", limit: 255, null: false
+    t.decimal "prix", precision: 10, scale: 2, null: false
+    t.text "description", null: false
+    t.string "caracteristique", limit: 500, null: false
+    t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
+    t.datetime "updated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
+    t.text "quantite", array: true
+    t.text "ingredients", array: true
   end
 end

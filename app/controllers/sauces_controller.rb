@@ -48,6 +48,8 @@ class SaucesController < ApplicationController
   end
 
   def sauce_params
-    params.require(:sauce).permit(:nom, :description, :ingredients, :caracteristique, :quantite, :prix)
+    params.require(:sauce).permit(:nom, :description, :caracteristique, :prix, quantite: [], ingredients: [])
   end
+  
+  
 end

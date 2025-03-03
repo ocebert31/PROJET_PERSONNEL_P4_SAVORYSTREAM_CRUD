@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Sauce, type: :model do
-  let(:valid_sauce) { Sauce.new(nom: 'Sauce tomate', quantite: 500, prix: 3.99, description: 'Delicious tomato sauce', ingredients: 'Tomatoes, salt', caracteristique: 'Spicy') }
+ let(:valid_sauce) { Sauce.new(nom: 'Sauce tomate', quantite: ['500ml', '1L'], prix: 3.99, description: 'Delicious tomato sauce', ingredients: ['Tomatoes', 'Salt'], caracteristique: 'Spicy') }
 
   describe 'Validations' do
     context 'when field for sauce is valid' do
@@ -21,18 +21,13 @@ RSpec.describe Sauce, type: :model do
             expect(valid_sauce).to_not be_valid
         end
 
-        it 'without a quantity' do
-            valid_sauce.quantite = nil
+        it 'with any quantity' do
+            valid_sauce.quantite = []
             expect(valid_sauce).to_not be_valid
         end
 
-        it 'with a non-integer quantity' do
-            valid_sauce.quantite = 'five hundred'
-            expect(valid_sauce).to_not be_valid
-        end
-
-        it 'with a quantite less than or equal to zero' do
-            valid_sauce.quantite = -1
+        it 'is invalid with quantity longer than 100 characters' do
+            valid_sauce.quantite = ['100ml' * 101, '1L']
             expect(valid_sauce).to_not be_valid
         end
 
@@ -61,13 +56,13 @@ RSpec.describe Sauce, type: :model do
             expect(valid_sauce).to_not be_valid
         end
 
-        it 'without the ingredients' do
-            valid_sauce.ingredients = nil
+        it 'is invalid with ingredients longer than 100 characters' do
+            valid_sauce.ingredients = ['a' * 101, 'Salt']
             expect(valid_sauce).to_not be_valid
         end
 
-        it 'is invalid with ingredients longer than 100 characters' do
-            valid_sauce.ingredients = 'a' * 101
+        it 'is invalid without ingredients' do
+            valid_sauce.ingredients = []
             expect(valid_sauce).to_not be_valid
         end
 
